@@ -2,7 +2,3 @@ streamlit
 pandas
 plotly
 scipy
-scikit-learn
-matplotlib
-seaborn
-pyspark
