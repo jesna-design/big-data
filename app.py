@@ -99,7 +99,7 @@ st.markdown("""
 st.markdown("""
 <div class="ola-header">
     <div>
-        <h1>🚕 OLA MOBILITY INSIGHTS</h1>
+        <h1>OLA MOBILITY INSIGHTS</h1>
         <p style="text-align:center;">Demand, cancellations & driver dispatch analytics — Bengaluru</p>
     </div>
 </div>
@@ -122,7 +122,7 @@ def load_data():
 full_df = load_data()
 
 # ---------- SIDEBAR FILTERS ----------
-st.sidebar.header("🔎 Filters")
+st.sidebar.header(" Filters")
 vehicles = sorted(full_df["Vehicle Type"].unique())
 sel_vehicles = st.sidebar.multiselect("Vehicle type", vehicles, default=vehicles)
 dmin, dmax = full_df["Date"].min().date(), full_df["Date"].max().date()
@@ -147,8 +147,8 @@ YELLOW = "#FFD100"
 
 # ---------- TABS ----------
 tab0, tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "📊  OVERVIEW", "📍  AREA → PEAK TIME", "⏰  TIME → PEAK AREA",
-    "🔥  HEATMAP", "❌  CANCELLATIONS", "🚖  DISPATCH PLANNER"])
+    "OVERVIEW", " AREA → PEAK TIME", " TIME → PEAK AREA",
+    "  HEATMAP", " CANCELLATIONS", " DISPATCH PLANNER"])
 
 with tab0:
     completed = df[df["Success"] == 1]
@@ -160,7 +160,7 @@ with tab0:
     c5, c6, c7, c8 = st.columns(4)
     c5.metric("Avg fare", f"₹{completed['Booking Value'].mean():,.0f}")
     c6.metric("Avg distance", f"{completed['Ride Distance'].mean():.1f} km")
-    c7.metric("Avg driver rating", f"{completed['Driver Ratings'].mean():.2f} ⭐")
+    c7.metric("Avg driver rating", f"{completed['Driver Ratings'].mean():.2f} ")
     c8.metric("Avg pickup ETA", f"{completed['Avg VTAT'].mean():.1f} min")
 
     colA, colB = st.columns(2)
@@ -286,11 +286,11 @@ with tab4:
     by_area = by_area.sort_values("Cancel_Rate", ascending=False)
     colX, colY = st.columns(2)
     with colX:
-        st.markdown("**🔴 Highest cancellation-rate areas**")
+        st.markdown("** Highest cancellation-rate areas**")
         st.dataframe(by_area.head(8).rename(columns={"Cancel_Rate": "Cancel rate %"}),
                      hide_index=True, use_container_width=True)
     with colY:
-        st.markdown("**🟢 Most reliable areas**")
+        st.markdown("** Most reliable areas**")
         st.dataframe(by_area.tail(8).iloc[::-1].rename(columns={"Cancel_Rate": "Cancel rate %"}),
                      hide_index=True, use_container_width=True)
 
@@ -301,7 +301,7 @@ with tab4:
     st.plotly_chart(fig, use_container_width=True)
 
 with tab5:
-    st.subheader("🚖 Driver dispatch planner")
+    st.subheader(" Driver dispatch planner")
     st.caption("Where should idle drivers go at a given hour? Areas are scored on demand, "
                "fare value and reliability (low cancellation rate).")
     plan_hour = st.select_slider("Hour of day", options=list(range(24)), value=18)
