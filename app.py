@@ -11,7 +11,11 @@ Run:           streamlit run app_pyspark.py
 """
 import os
 import sys
-
+import shutil
+if shutil.which("java") is None:
+    import jdk
+    os.environ["JAVA_HOME"] = jdk.install("17", jre=True, path="/tmp/jdk")
+    os.environ["PATH"] = os.environ["JAVA_HOME"] + "/bin:" + os.environ["PATH"]
 os.environ.setdefault("PYSPARK_PYTHON", sys.executable)
 os.environ.setdefault("PYSPARK_DRIVER_PYTHON", sys.executable)
 
