@@ -3,3 +3,4 @@ pandas
 plotly
 scipy
 pyspark==3.5.3
+install-jdk
