@@ -2,3 +2,4 @@ streamlit
 pandas
 plotly
 scipy
+pyspark==3.5.3
