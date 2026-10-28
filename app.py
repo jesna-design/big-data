@@ -11,13 +11,17 @@ Run:           streamlit run app_pyspark.py
 """
 import os
 import sys
-import shutil
+import shutil, glob
 if shutil.which("java") is None:
-    import jdk
-    os.environ["JAVA_HOME"] = jdk.install("17", jre=True, path="/tmp/jdk")
+    found = glob.glob("/tmp/jdk/*/bin/java")
+    if found:
+        os.environ["JAVA_HOME"] = os.path.dirname(os.path.dirname(found[0]))
+    else:
+        import jdk
+        shutil.rmtree("/tmp/jdk", ignore_errors=True)       # remove the broken partial download
+        shutil.rmtree("/tmp/jdk_download", ignore_errors=True)
+        os.environ["JAVA_HOME"] = jdk.install("17", jre=True, path="/tmp/jdk")
     os.environ["PATH"] = os.environ["JAVA_HOME"] + "/bin:" + os.environ["PATH"]
-os.environ.setdefault("PYSPARK_PYTHON", sys.executable)
-os.environ.setdefault("PYSPARK_DRIVER_PYTHON", sys.executable)
 
 import streamlit as st
 import pandas as pd
