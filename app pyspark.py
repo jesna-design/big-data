@@ -87,7 +87,12 @@ if not os.path.exists(CSV_PATH):
 def ensure_java():
     if shutil.which("java"):
         return "system java"
-    found = glob.glob("/tmp/jdk/*/bin/java")
+    # 1) JRE downloaded at build time into ./jre (see Render build command)
+    found = glob.glob(os.path.join(BASE_DIR, "jre", "*", "bin", "java"))
+    # 2) JRE downloaded at runtime earlier
+    if not found:
+        found = glob.glob("/tmp/jdk/*/bin/java")
+    # 3) last resort: download at runtime
     if not found:
         import jdk
         shutil.rmtree("/tmp/jdk", ignore_errors=True)  # remove any broken partial download
