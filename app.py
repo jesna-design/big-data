@@ -79,33 +79,45 @@ st.markdown("""
 def get_spark():
     spark = (SparkSession.builder
              .appName("OlaMobilityDashboard")
-             .master("local[*]")
-             .config("spark.sql.shuffle.partitions", "8")
+             .master("local[2]")
+             .config("spark.driver.memory", "512m")
+             .config("spark.sql.shuffle.partitions", "4")
+             .config("spark.ui.enabled", "false")
              .config("spark.sql.ansi.enabled", "false")
-             .config("spark.ui.showConsoleProgress", "false")
              .getOrCreate())
     spark.sparkContext.setLogLevel("ERROR")
     return spark
 
 
-# ---------- LOAD & PREPARE DATA ----------
 @st.cache_resource
 def load_data():
+    from pyspark.sql.types import StructType, StructField, StringType, DoubleType
+    S, D = StringType(), DoubleType()
+    schema = StructType([
+        StructField("Date", S), StructField("Time", S), StructField("Booking ID", S),
+        StructField("Booking Status", S), StructField("Customer ID", S),
+        StructField("Vehicle Type", S), StructField("Pickup Location", S),
+        StructField("Drop Location", S), StructField("Avg VTAT", D), StructField("Avg CTAT", D),
+        StructField("Cancelled  by Customer", D), StructField("Reason for Cancelling by Customer", S),
+        StructField("Cancelled Rides by Driver", D), StructField("Reason for Cancelling by Driver", S),
+        StructField("Incomplete Rides", D), StructField("Incomplete Rides Reason", S),
+        StructField("Booking Value", D), StructField("Payment Method", S),
+        StructField("Ride Distance", D), StructField("Driver Ratings", D),
+        StructField("Customer Rating", D),
+    ])
     spark = get_spark()
-    raw = (spark.read.option("header", True).option("inferSchema", True).csv(CSV_PATH))
+    raw = spark.read.option("header", True).schema(schema).csv(CSV_PATH)
     sdf = (raw
            .dropna(subset=["Pickup Location", "Time"])
            .withColumn("Hour", F.split(F.col("Time"), ":").getItem(0).cast("int"))
            .withColumn("Date", F.to_date(F.col("Date"), "d/M/yyyy"))
            .dropna(subset=["Hour", "Date"])
-           # Spark dayofweek: 1=Sunday..7=Saturday -> 0=Monday..6=Sunday
            .withColumn("DayOfWeek", (F.dayofweek("Date") + 5) % 7)
            .withColumn("Cancelled",
                        F.when(F.col("Booking Status").startswith("Cancelled"), 1).otherwise(0))
            .withColumn("Success",
                        F.when(F.col("Booking Status") == "Success", 1).otherwise(0))
            .cache())
-    sdf.count()  # materialise the cache once
     return sdf
 
 
