@@ -111,7 +111,7 @@ def get_spark():
     spark = (SparkSession.builder
              .appName("OlaMobilityDashboard")
              .master("local[2]")
-             .config("spark.driver.memory", "384m")
+             .config("spark.driver.memory", "1g")
              .config("spark.driver.extraJavaOptions", "-XX:+UseSerialGC")
              .config("spark.sql.shuffle.partitions", "2")
              .config("spark.default.parallelism", "2")
